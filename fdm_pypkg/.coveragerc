@@ -1,0 +1,3 @@
+[run]
+omit =
+    ./src/fdm/test.py
