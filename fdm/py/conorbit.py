@@ -103,7 +103,7 @@ def run_conorbit(problem, budget_factor=100.0, budget_in="queries", max_queries=
     npmax = 2 * n + 1
     maxdelta = 0.5 * minxrange
     # Same starting trust-region radius as the other solvers being compared
-    # (CDFO's Options.delta0 and COBYLA's rhobeg both default to 1.0, unscaled
+    # (FDM's Options.delta0 defaults to 1.0, unscaled
     # by problem/box size), not a fraction of the synthetic CONORBIT-only box.
     delta = min(delta0, maxdelta)
     gtol = 1e-4 * minxrange
