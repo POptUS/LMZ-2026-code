@@ -1,4 +1,4 @@
-# lara-fdm
+# FDM
 
 This is software for reproducing the numerical results in the paper
 <https://arxiv.org/abs/2610.17101>.
