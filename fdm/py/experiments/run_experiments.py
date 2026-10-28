@@ -42,14 +42,6 @@ Solver variants (--solvers):
                  installed into this same Python environment; pass --solvers
                  explicitly to include it, and --jobs 1 with no --mpi (one
                  MATLAB engine per process, slow to start)
-    NOWPAC       Via Sandia's DAKOTA toolkit (fdm/py/nowpac.py). Needs a DAKOTA
-                 build with -DHAVE_NOWPAC=ON (not in DAKOTA's precompiled
-                 binaries) and a feasible starting point (no feasibility-
-                 restoration phase); not in the --solvers default -- pass
-                 --solvers explicitly to include it. Unlike CONORBIT, each run
-                 starts its own `dakota` subprocess and socket server, so
-                 --jobs > 1 is safe; set DAKOTA_DIR (default ~/dakota) if
-                 installed elsewhere.
 """
 from __future__ import annotations
 
@@ -73,11 +65,6 @@ try:
     from fdm.fdm.conorbit import run_conorbit
 except ImportError:
     run_conorbit = None
-
-try:
-    from fdm.fdm.nowpac import run_nowpac
-except ImportError:
-    run_nowpac = None
 
 VARIANTS = {
     "TV-AS-lazy": dict(subproblem="tv", active_set=True, lazy=True),
@@ -104,11 +91,6 @@ def run_one(args):
                              budget_in=common.get("budget_in", "queries"),
                              spec_kind=spec.kind, spec_bounds=spec.bounds,
                              delta0=common.get("delta0", 1.0))
-        elif solver == "NOWPAC":
-            r = run_nowpac(prob, budget_factor=budget,
-                           budget_in=common.get("budget_in", "queries"),
-                           delta0=common.get("delta0", 1.0),
-                           delta_lower=common.get("delta_lower", 1e-3))
         else:
             opts = Options(budget_factor=budget, **VARIANTS[solver], **common)
             r = CDFO(prob, opts).run()

@@ -59,8 +59,6 @@ STYLE = {
     #                            label="COBYLA (NaN at infeasible $f$)"),
     # ---- CONORBIT (ORBITc.m via MATLAB): uncomment to include it -------------
     "CONORBIT":    dict(color="0.6", ls=(0, (1, 1)), lw=1.1, label="CONORBIT"),
-    # ---- NOWPAC (via DAKOTA): uncomment to include it -------------------------
-    "NOWPAC":      dict(color="0.3", ls=(0, (5, 1)), lw=1.1, label="NOWPAC"),
 }
 
 ap = argparse.ArgumentParser()
