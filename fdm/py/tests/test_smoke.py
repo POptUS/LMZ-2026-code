@@ -2,7 +2,7 @@
 import numpy as np
 from fdm.fdm.problems import hs_problems, make_feasible
 from fdm.fdm.algorithm import run_cdfo
-from fdm.fdm.baselines import run_cobyla, reference_solution
+from fdm.fdm.baselines import reference_solution
 
 FSTAR = {"HS12": -30.0, "HS22": 1.0, "HS29": -16 * np.sqrt(2), "HS43": -44.0, "HS100": 680.6300573, "HS113": 24.3062091}
 
@@ -21,9 +21,9 @@ def test_variants_run():
         assert np.all(r["c"] <= 1e-10)
 
 
-def test_cobyla_and_reference():
+def test_reference_solution():
     P = hs_problems()[0]
-    r = run_cobyla(P, budget_factor=50)
+    r = run_cdfo(P, budget_factor=50)
     ref = reference_solution(P, r["x"])
     assert abs(ref["f"] - FSTAR["HS12"]) < 1e-6 and ref["A"] == [0]
 

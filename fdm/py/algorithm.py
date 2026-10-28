@@ -11,8 +11,6 @@ Variants (see ``Options``):
                         (refreshed every ``refresh_every`` iterations)
                False -> all p constraint models rebuilt every iteration
                         (the algorithm exactly as analyzed)
-
-The COBYLA baseline lives in ``baselines.py``.
 """
 from __future__ import annotations
 
