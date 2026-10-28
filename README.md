@@ -22,7 +22,6 @@ need `ibcdfo` (`formquad`) and `pycutest` (the CUTEst test set); without them
 * **Solver names.** The code names the paper's variants `TV-AS-lazy`,
   `TV-AS-full`, `TV-ALL`, `SQP-ALL`, `SQP-AS-lazy`; these are the paper's
   `FDM-AS-lazy`, `FDM-AS-full`, `FDM-ALL`, `SQP-ALL`, `SQP-AS-lazy`.
-  `COBYLA` and `COBYLA-unrelaxable` (SciPy) are also run by default.
 * **Budget.** `--budget B` means `B*(n+1)*(p+1)` scalar oracle queries; the
   paper uses `--budget 200`.
 * **Run, summarize, plot.**
