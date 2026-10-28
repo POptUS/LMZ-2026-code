@@ -31,11 +31,6 @@ Solver variants (--solvers):
     TV-ALL       TV subproblem, all constraints in every subproblem
     SQP-ALL      standard TR-SQP subproblem, feasible-only acceptance
     SQP-AS-lazy  standard TR-SQP subproblem with the active-set machinery
-    COBYLA       SciPy COBYLA
-    COBYLA-unrelaxable
-                 the same, but the objective is not returned at an infeasible
-                 point: f(x) comes back as NaN there, as it would when the
-                 constraints are unrelaxable.  COBYLA has no provision for this
     CONORBIT     ORBITc.m, called through the MATLAB Engine for Python (see
                  fdm/py/conorbit.py).  Not in the --solvers default: it needs a
                  local MATLAB install plus the MATLAB Engine API for Python
@@ -58,7 +53,7 @@ from concurrent.futures import ProcessPoolExecutor, as_completed
 import numpy as np
 
 from fdm.fdm.algorithm import Options, CDFO
-from fdm.fdm.baselines import run_cobyla, reference_solution
+from fdm.fdm.baselines import reference_solution
 from fdm.fdm.problems import build_cutest_testset, load_cutest_testset, hs_problems, ProblemSpec
 
 try:
@@ -79,11 +74,7 @@ def run_one(args):
     spec, solver, budget, common = args
     try:
         prob = spec.load()          # re-create the (unpicklable) problem inside the worker
-        if solver.startswith("COBYLA"):
-            r = run_cobyla(prob, budget_factor=budget,
-                           budget_in=common.get("budget_in", "queries"),
-                           unrelaxable=solver.endswith("-unrelaxable"))
-        elif solver == "CONORBIT":
+        if solver == "CONORBIT":
             # spec.kind/spec.bounds must match how `prob` above was just loaded,
             # since ORBITc's callback rebuilds the Oracle's problem from scratch
             # inside MATLAB's embedded interpreter via the same ProblemSpec recipe.
@@ -212,8 +203,7 @@ def main():
     ap.add_argument("--p-max", type=int, default=100)
     ap.add_argument("--bounds", default="exclude", choices=["exclude", "as_constraints"])
     ap.add_argument("--budget", type=float, default=100.0, help="budget in multiples of (n+1) points")
-    ap.add_argument("--solvers",
-                    default=",".join(list(VARIANTS) + ["COBYLA", "COBYLA-unrelaxable"]))
+    ap.add_argument("--solvers", default=",".join(VARIANTS))
     ap.add_argument("--only", default=None, help="comma-separated problem names")
     ap.add_argument("--exclude", default=None,
                     help="comma-separated problem names to drop (e.g. known stragglers)")

@@ -4,9 +4,6 @@ Fraction of trial points that are feasible, per solver.
 
 For the model-based variants a trial point is the solution of the step
 subproblem, and it is feasible when every constraint is satisfied there.
-COBYLA's trust-region steps can be told apart from its geometry-improving steps
-in the implementation used, so the same measure is available for it; pass
---cobyla-all-points to count all of its evaluated points instead.
 
     python3 plot_feasibility.py results_figures.pkl --outdir figs
     python3 plot_feasibility.py results_figures.pkl --solvers TV-AS-lazy,SQP-ALL
@@ -41,9 +38,6 @@ STYLE = {
     "TV-ALL":             dict(color="C2",   label="FDM\n(all constraints)"),
     "SQP-ALL":            dict(color="C3",   label="SQP\n(all constraints)"),
     "SQP-AS-lazy":        dict(color="C4",   label="SQP-AS\n(lazy)"),
-    # ---- the two COBYLA variants: uncomment to include them ------------------
-    # "COBYLA":             dict(color="0.35", label="COBYLA"),
-    # "COBYLA-unrelaxable": dict(color="0.55", label="COBYLA\n(NaN at infeasible $f$)"),
 }
 
 ap = argparse.ArgumentParser()
@@ -51,7 +45,6 @@ ap.add_argument("pickle")
 ap.add_argument("--outdir", default="figs")
 ap.add_argument("--name", default="fig_feasibility.pdf")
 ap.add_argument("--solvers", default=None, help="comma-separated; default all present")
-ap.add_argument("--cobyla-all-points", action="store_true")
 a = ap.parse_args()
 
 d = pickle.load(open(a.pickle, "rb"))
@@ -66,14 +59,8 @@ for s in solvers:
         r = runs.get(s)
         if not r:
             continue
-        if s.startswith("COBYLA"):
-            v = r.get("frac_feasible_trials")
-            if a.cobyla_all_points or v is None or not np.isfinite(v):
-                fi = r.get("frac_infeasible_points")
-                v = (1 - fi) if fi is not None else np.nan
-        else:
-            h = r.get("history") or []
-            v = np.mean([bool(x["trial_feasible"]) for x in h]) if h else np.nan
+        h = r.get("history") or []
+        v = np.mean([bool(x["trial_feasible"]) for x in h]) if h else np.nan
         if np.isfinite(v):
             vals.append(float(v))
     data.append(np.array(vals))

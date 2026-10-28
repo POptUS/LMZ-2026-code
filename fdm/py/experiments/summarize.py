@@ -16,7 +16,7 @@ import pandas as pd
 from fdm.fdm.problems import Problem
 from fdm.fdm.profiles import collect_costs, feasibility_stats, identification_stats
 
-ORDER = ["TV-AS-lazy", "TV-AS-full", "TV-ALL", "SQP-ALL", "SQP-AS-lazy", "COBYLA", "COBYLA-unrelaxable"]
+ORDER = ["TV-AS-lazy", "TV-AS-full", "TV-ALL", "SQP-ALL", "SQP-AS-lazy"]
 
 
 def _apply_subset(results, meta, only=None, natural=False, cache="problems_cache.json"):
@@ -89,7 +89,7 @@ def main():
     print(f"reference solution available: {nref}/{N}; of those, strict complementarity: {nsc}")
 
     # ---------------- 1. feasibility ----------------
-    print("\n--- (1) FEASIBILITY of trial points (COBYLA: all evaluated points) ---")
+    print("\n--- (1) FEASIBILITY of trial points ---")
     print(f"{'solver':14s} {'median':>8s} {'mean':>8s} {'<0.5':>6s} {'>0.8':>6s}  {'subQP infeas':>13s}")
     feas_tbl = {}
     for s in solvers:
@@ -98,12 +98,9 @@ def main():
             if s not in runs:
                 continue
             r = runs[s]
-            if s.startswith("COBYLA"):
-                v = 1 - r.get("frac_infeasible_points", np.nan)
-            else:
-                st = feasibility_stats(r)
-                v = st["frac_feasible_trials"]
-                subinf.append(st["frac_sub_infeasible"])
+            st = feasibility_stats(r)
+            v = st["frac_feasible_trials"]
+            subinf.append(st["frac_sub_infeasible"])
             if np.isfinite(v):
                 vals.append(v)
         vals = np.array(vals)
@@ -137,19 +134,6 @@ def main():
                 sv, T = Tcache[(cost, tau)]
                 col = T[:, sv.index(s_)]
                 print(f"    {s_:14s}" + "".join(f"{np.mean(col <= b):8.2f}" for b in levels))
-
-    print("\n--- (2c) COST RATIO vs COBYLA on problems BOTH solve (median T_ours/T_cobyla) ---")
-    if "COBYLA" in solvers:
-        for cost in ["points", "components"]:
-            line = f"  {cost:11s}"
-            for tau in (1e-3, 1e-5):
-                sv, T = Tcache[(cost, tau)]
-                jc = sv.index("COBYLA")
-                jo = sv.index("TV-AS-lazy") if "TV-AS-lazy" in sv else 0
-                m = np.isfinite(T[:, jc]) & np.isfinite(T[:, jo])
-                r = np.median(T[m, jo] / T[m, jc]) if m.any() else np.nan
-                line += f"   tau={tau:g}: {r:6.2f} (on {m.sum():3d} problems)"
-            print(line)
 
     # ---------------- 3. cost of the constraint models ----------------
     print("\n--- (3) CONSTRAINT EVALUATIONS (lazy vs rebuilt-every-iteration) ---")

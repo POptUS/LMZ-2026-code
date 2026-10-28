@@ -53,10 +53,6 @@ STYLE = {
     "TV-ALL":      dict(color="C2", ls="-.", lw=1.1, label="FDM (all constraints)"),
     "SQP-ALL":     dict(color="C3", ls=":",  lw=1.1, label="SQP (all constraints)"),
     "SQP-AS-lazy": dict(color="C4", ls=(0, (3, 1, 1, 1)), lw=1.0, label="SQP-AS (lazy)"),
-    # ---- the two COBYLA variants: uncomment to include them ------------------
-    # "COBYLA":      dict(color="0.35", ls="-", lw=1.1, label="COBYLA"),
-    # "COBYLA-unrelaxable": dict(color="0.35", ls=(0, (4, 2)), lw=1.1,
-    #                            label="COBYLA (NaN at infeasible $f$)"),
     # ---- CONORBIT (ORBITc.m via MATLAB): uncomment to include it -------------
     "CONORBIT":    dict(color="0.6", ls=(0, (1, 1)), lw=1.1, label="CONORBIT"),
 }

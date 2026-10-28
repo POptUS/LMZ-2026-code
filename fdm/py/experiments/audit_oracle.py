@@ -9,8 +9,6 @@ each c_i), recording the point and value of every scalar query.  This script
 re-runs a sample of problems with the ledgers on and checks:
 
   * the ledger lengths agree with the counters n_f and n_c;
-  * COBYLA, which has no feasibility logic, is charged exactly p+1 queries per
-    point it visits;
   * the proposed method's queries per point, which should be well below p+1.
 
     python3 audit_oracle.py --n-sample 12
@@ -24,7 +22,6 @@ import numpy as np
 import pandas as pd
 
 from fdm.fdm.algorithm import CDFO, Options
-from fdm.fdm.baselines import run_cobyla
 from fdm.fdm.problems import load_cutest_testset, hs_problems
 
 ap = argparse.ArgumentParser()
@@ -62,17 +59,6 @@ for prob in probs:
                      n_c=au["n_c"], n_c_logged=au["n_c_logged"], agrees=au["agrees"],
                      points=su["n_points"], queries=su["n_components"],
                      q_per_pt=su["n_components"] / max(su["n_points"], 1), expected=prob.p + 1))
-    # COBYLA
-    try:
-        r = run_cobyla(prob, budget_factor=a.budget, log_queries=True)
-    except Exception as e:  # noqa
-        print(f"  {prob.name} COBYLA: {e!r}")
-        continue
-    su = r["oracle"]
-    rows.append(dict(problem=prob.name, p=prob.p, solver="COBYLA",
-                     n_f=np.nan, n_f_logged=np.nan, n_c=np.nan, n_c_logged=np.nan,
-                     agrees=True, points=su["n_points"], queries=su["n_components"],
-                     q_per_pt=su["n_components"] / max(su["n_points"], 1), expected=prob.p + 1))
     print(f"  {prob.name}: done")
 
 df = pd.DataFrame(rows)
@@ -81,12 +67,6 @@ print("\n" + df[["problem", "p", "solver", "n_f", "n_f_logged", "n_c", "n_c_logg
       .to_string(index=False, float_format=lambda v: f"{v:.2f}"))
 
 ours = df[df.solver == "TV-AS-lazy"]
-cob = df[df.solver == "COBYLA"]
 print(f"\nledger agrees with the counters on {int(ours.agrees.sum())}/{len(ours)} runs")
-if len(cob):
-    off = cob[(cob.q_per_pt - cob.expected).abs() > 1e-9]
-    print(f"COBYLA charged exactly p+1 per point on {len(cob) - len(off)}/{len(cob)} problems")
-    for _, r in off.iterrows():
-        print(f"  {r.problem}: {r.q_per_pt:.3f} vs expected {r.expected}")
 print(f"median queries per point: proposed {ours.q_per_pt.median():.2f} "
-      f"(of p+1 = {ours.expected.median():.0f}), COBYLA {cob.q_per_pt.median():.2f}")
+      f"(of p+1 = {ours.expected.median():.0f})")
