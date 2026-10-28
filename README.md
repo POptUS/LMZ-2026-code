@@ -37,11 +37,9 @@ need `ibcdfo` (`formquad`) and `pycutest` (the CUTEst test set); without them
   Every (problem, solver) run is cached on disk, so interrupted runs resume;
   see [fdm/README.md](fdm/README.md). The CUTEst problem list and reference
   solutions are cached in `problems_cache.json`.
-* **CONORBIT and NOWPAC** are optional and are not in the default `--solvers`
-  list. CONORBIT must be obtained from its authors (see above); NOWPAC needs a
-  DAKOTA build with NOWPAC enabled. Pass them explicitly, e.g.
-  `--solvers CONORBIT` (use `--jobs 1`), and merge with
-  `_merge_nowpac.py` as needed.
+* **CONORBIT** is optional and is not in the default `--solvers` list. It
+  must be obtained from its authors (see above). Pass it explicitly, e.g.
+  `--solvers CONORBIT` (use `--jobs 1`).
 * Runs are deterministic given the same package versions, but small
   numerical differences across platforms and solver versions (e.g. Clarabel,
   SciPy) may change individual runs.
